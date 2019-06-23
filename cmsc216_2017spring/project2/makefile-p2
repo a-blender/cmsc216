@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# bash script (makefile) to run public tests on document.c
+# runs public tests 1-6 from any folder on the source file for project 2
+
+# navigate to the folder for project 2
+cd ~/216/project2
+
+# compile document.c and run with the public tests
+
+echo "Running public test 1..."
+gcc document.c public01.c
+a.out > results1
+diff public01.output results1
+
+echo "Running public test 2..."
+gcc document.c public02.c
+a.out > results2
+diff public02.output results2
+
+echo "Running public test 3..."
+gcc document.c public03.c
+a.out > results3
+diff public03.output results3
+
+echo "Running public test 4..."
+gcc document.c public04.c
+a.out > results4
+diff public04.output results4
+
+echo "Running public test 5..."
+gcc document.c public05.c
+a.out > results5
+diff public05.output results5
+
+echo "Running public test 6..."
+gcc document.c public06.c
+a.out > results6
+diff public06.output results6
+
+# delete executables and redirection files
+echo "Deleting the results files..."
+rm -r ./grades.x ./results*
+
+echo "Your project 2 public tests were successful."

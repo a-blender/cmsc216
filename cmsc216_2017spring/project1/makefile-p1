@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# bash script (makefile) to run public tests on grades.x
+# runs public tests 1-4 from any folder on the source file for project 1
+
+# navigate for the folder for project 1
+cd ~/216/project1/
+
+# compile the source file for project 1
+gcc grades.c -lm -o grades.x
+
+# run the public tests
+echo "Running public test 1..."
+grades.x < public01.in > results1
+diff public01.output results1
+
+echo "Running public test 2..."
+grades.x < public02.in > results2
+diff public02.output results2
+
+echo "Running public test 3..."
+grades.x < public03.in > results3
+diff public03.output results3
+
+echo "Running public test 4..."
+grades.x < public04.in > results4
+diff public04.output results4
+
+# delete executables and redirection files
+echo "Deleting the results files..."
+echo "Your public tests for grades.c were successful."
+rm -r ./grades.x ./results*

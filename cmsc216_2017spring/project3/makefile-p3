@@ -1,0 +1,63 @@
+#!/bin/sh
+
+# bash script (makefile) to run public tests on my user_interface.c
+# runs public tests 1-9 from any folder on source files for project3
+
+# navigate to the folder with the project3 source files
+cd ~/216/project3/
+
+# move copies of the source files to ~/216/ for backup
+# we're doing this in case "user_interface" overwrites the files
+echo "Moving copies of source files to ~/216/..."
+cp user_interface.c document.c ~/216/copies/
+
+# compile user_interface.c and document.c into an exe
+echo "Compiling interface.c and document.c for testing..."
+gcc user_interface.c document.c -o user_interface
+
+# compile public tests for user_interface.c using Makefile
+echo "Compiling the public tests using Makefile..."
+make
+
+# compare each public test output file with the results
+echo "Running public test 1..."
+public01 > results1
+diff results1 public01.output
+
+echo "Running public test 2..."
+public02 > results2
+diff results2 public02.output
+
+echo "Running public test 3..."
+public03 > results3
+diff results3 public03.output
+
+echo "Running public test 4..."
+public04 > results4
+diff results4 public04.output
+
+echo "Running public test 5..."
+public05 > results5
+diff results5 public05.output
+
+echo "Running public test 6..."
+public06 > results6
+diff results6 public06.output
+
+echo "Running public test 7..."
+public07 > results7
+diff results7 public07.output
+
+echo "Running public test 8..."
+public08 > results8
+diff results8 public08.output
+
+echo "Running public test 9..."
+public09 > results9
+diff results9 public09.output
+
+# delete executables and redirection files
+echo "Deleting the results files..."
+rm -r ./results* ./*.o ./*~
+
+echo "Your project 3 public tests were successful."

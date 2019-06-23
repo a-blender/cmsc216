@@ -1,0 +1,61 @@
+	# FIBONACCI by Anna Blendermann, ablender, 114474025
+	# this program computes the fibonacci sequence of any number
+
+main:
+	irmovl $0x1000, %esp		# setting the stack pointer
+
+	irmovl $0, %ebx			# int n
+	rdint %ebx			# scanf("%d", &n)
+	
+	pushl %ebx			# push n onto the stack
+	call fib			# fib(n)
+	popl %ebx
+	wrint %eax			# printf("%d", fib(n))
+	
+	irmovl $10, %esi
+	wrch %esi			# print("\n")
+	irmovl $0, %eax			# return 0	
+	halt	
+
+fib:
+	# recursive fibonacci sequence function, parameter n
+	# if n == 0/1 return n, else return [fib(n - 1) + fib(n - 2)]
+	
+	pushl %ebp			# save old base/frame pointer
+	rrmovl %esp, %ebp		# setting new frame pointer
+	mrmovl 8(%ebp), %edx		# retrieving n	
+
+	irmovl $0, %esi
+	subl %edx, %esi			# if (n == 0)
+	je return			# return 0
+
+	irmovl $1, %esi
+	subl %edx, %esi			# if (n == 1)
+	je baseCase			# return 1
+
+recurse:	
+	# implement the fib(n - 1) + fib(n - 2) recursive call
+	irmovl $1, %esi
+	subl %esi, %edx			# n = (n - 1)
+	
+	pushl %edx			# push (n - 1) onto the stack
+	call fib			# f(n - 1)
+	popl %edx			
+
+	irmovl $1, %esi			
+	subl %esi, %edx			# n = (n - 2)
+
+	pushl %edx			# push (n - 2) onto the stack
+	call fib			# call f(n - 2)
+	popl %edx			
+	jmp return			# jump to return
+	
+baseCase:
+	irmovl $1, %esi
+	addl %esi, %eax			# return 1
+	
+return:	
+	rrmovl %ebp, %esp		# reset the stack pointer
+	popl %ebp			# restore old base/frame pointer
+	ret				# return from fib
+	

@@ -1,0 +1,145 @@
+	# REVERSE PREFIX SUM by Anna Blendermann, ablender, 114474025
+	# this program computes the reverse prefix sum of array elements
+
+main:
+	irmovl 0x1000, %esp		# setting up the stack
+	
+	# array_size = the number of values in the read array
+	# *start_point = a pointer to the global array named "data"
+	irmovl $0, %ebx			# int array_size
+	irmovl data, %ecx		# int *start_point
+	irmovl $0, %edx			# temp register
+
+	pushl %ecx	
+	call read_array			# read_array(data)
+	popl %ecx
+	
+	rrmovl %eax, %ebx		# array_size = read_array(data)
+
+	rrmovl %ebx, %edi
+	irmovl $1, %esi
+	subl %esi, %edi			# array_size - 1
+	irmovl $4, %esi
+	multl %esi, %edi		# multiply element size (4)
+	addl %edi, %ecx			# *start_point = data + array_size - 1
+
+	pushl %edx			# push 0
+	pushl %ebx			# push array_size
+	pushl %ecx			# push *start_point
+	call reverse_prefix_sum		# reverse_prefix_sum(start, size, 0)
+	popl %ecx
+	popl %ebx
+	popl %edx
+
+	irmovl data, %ebx		# start over at the front of the array
+	pushl %ebx			# pass pointer to data[0]
+	call print_array		# print_array(data)
+	popl %ebx
+	
+	irmovl $0, %eax			# return 0
+	halt				# terminate the program
+
+read_array:
+	pushl %ebp			# save old base/frame pointer
+	rrmovl %esp, %ebp		# setting new frame pointer
+	irmovl $4, %eax			# one local variable
+	subl %eax, %esp			# subtracting to adjust stack
+	
+	mrmovl 8(%ebp), %ebx		# retrieving data
+	
+	irmovl $0, %ecx			# int size = 0
+	rdint %esi	
+	rmmovl %esi, 0(%ebx)		# scanf("%d", a)
+
+loop1:	
+	irmovl $1, %esi
+	mrmovl 0(%ebx), %edi
+	addl %edi, %esi
+	je endLoop1			# while (*a != -1)
+
+	irmovl $4, %esi
+	addl %esi, %ebx			# a++
+
+	irmovl $1, %esi
+	addl %esi, %ecx			# size++
+	rmmovl %ecx, -4(%ebp)		# storing size in local variable
+
+	rdint %esi	
+	rmmovl %esi, 0(%ebx)
+	jmp loop1
+
+endLoop1:
+	# we're out of the loop now, return size
+	mrmovl -4(%ebp), %eax				
+	rrmovl %ebp, %esp		# reset the stack pointer
+	popl %ebp			# restore old base/frame pointer
+	ret				# return size
+
+reverse_prefix_sum:
+	pushl %ebp			# save old base/frame pointer
+	rrmovl %esp, %ebp		# setting the new frame pointer
+	
+	mrmovl 8(%ebp), %eax		# int *a
+	mrmovl 12(%ebp), %ebx		# int size
+	mrmovl 16(%ebp), %ecx		# int total
+
+	# this program stops here at size = 0
+	irmovl $0, %esi
+	subl %ebx, %esi
+	je return2			# if (size != 0)
+
+	mrmovl 0(%eax), %esi
+	addl %esi, %ecx 
+	rmmovl %ecx, 0(%eax)		# a* += total
+	
+	irmovl $4, %esi
+	subl %esi, %eax			# a - 1
+
+	irmovl $1, %esi
+	subl %esi, %ebx			# size - 1	
+
+	pushl %ecx			# push total 
+	pushl %ebx			# push array_size
+	pushl %eax			# push *start_point
+	call reverse_prefix_sum		# reverse_prefix_sum(a-1, size-1, *a)
+	popl %eax
+	popl %ebx
+	popl %ecx
+	
+return2:
+	# we're out of the if statement now, return void
+	rrmovl %ebp, %esp		# reset the stack pointer
+	popl %ebp			# restore old base/frame pointer
+	ret 				# return (void)
+
+print_array:
+	pushl %ebp			# save old base/frame pointer
+	rrmovl %esp, %ebp		# setting the new frame pointer
+	mrmovl 8(%ebp), %eax		# retrieving *a
+
+loop3:	
+	mrmovl 0(%eax), %ebx
+	irmovl $1, %esi
+	addl %ebx, %esi
+	je return3			# while (a* != -1)
+
+	wrint %ebx			# printf("d")
+	irmovl $32, %esi
+	wrch %esi			# printf(" ")
+
+	irmovl $4, %esi
+	addl %esi, %eax			# a++
+	jmp loop3
+
+return3:	
+	irmovl $10, %esi
+	wrch %esi			# printf("\n")	
+	rrmovl %ebp, %esp		# reset the stack pointer
+	popl %ebp			# restore old base/frame pointer
+	ret				# return (void)
+	
+	.align 4
+data:
+	.pos 80				# creating an array of 20 elements
+
+	

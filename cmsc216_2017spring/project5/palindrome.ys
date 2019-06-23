@@ -1,0 +1,75 @@
+	# PALINDROME by Anna Blendermann, ablender, 114474025
+	# this program checks whether a string is a palindrome, and prints Y/N
+
+main:	
+	irmovl array, %eax		# pointer to array
+	irmovl $20, %ebx		# int data_length
+	irmovl $0, %edi			# int i = 0
+
+loop:
+	# use for loop to read numbers from the user input 
+	rdch %ecx			# scanf("%c")
+	
+	irmovl $10, %esi
+	subl %ecx, %esi			# if (array[i] == '\n')
+	je endLoop			# break
+
+	# if \n wasn't found, update the value in memory 
+	rmmovl %ecx, 0(%eax)		# scanf("%c", &array[i]
+
+	irmovl $1, %esi
+	addl %esi, %edi			# i++
+	
+	irmovl $4, %esi
+	addl %esi, %eax			# data = data + 1
+	jmp loop			# jump to top of loop
+	
+endLoop:	
+	# we've added all elements to the array now
+	# now we create pointers to start/end and check for symmetry
+	
+	irmovl array, %ebx		# pointer to array[0]
+	irmovl $4, %esi
+	subl %esi, %eax			# pointer to array[data_length - 1]
+	irmovl $0, %ecx			# int i = 0
+
+	irmovl $2, %esi
+	divl %esi, %edi			# data_length / 2
+
+loop2:	
+	# check the decreasing endpoints of the user input
+	# if they're not equal at any point, jump to printN
+
+	mrmovl 0(%ebx), %esi		# array[i]
+	mrmovl 0(%eax), %edx		# array[data_length - i - 1]
+	subl %edx, %esi			# if (array[i] !=  array[length - 1]
+	jne printN			# jump to printN
+
+	irmovl $4, %esi
+	addl %esi, %ebx			# array[i] = array[i + 1]
+	subl %esi, %eax			# array[length-i-1] = array[length-i-2]	
+	
+	irmovl $1, %esi
+	addl %esi, %ecx			# i++
+	
+	rrmovl %edi, %esi				
+	subl %ecx, %esi			# i < data_length / 2
+	jg loop2			# jmp to loop
+
+printY:
+	irmovl $89, %esi
+	wrch %esi			# printf("Y")
+	jmp endMain			# jmp to endMain
+printN:	
+	irmovl $78, %esi
+	wrch %esi			# print("N")	
+	
+endMain:	
+	irmovl $10, %esi
+	wrch %esi			# print("\n")
+	
+	irmovl $0, %eax			# return 0
+	halt				# terminate the program
+	.align 4
+array:
+	.pos 80 			# 4 bytes * 20 elements in the array

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# bash script (makefile) to run public tests on calendar.c
+# runs public tests 1-5 from any folder on source files for project4
+
+# navigate to the folder with the project3 source files
+cd ~/216/project4/
+
+# move copies of the source files to ~/216/ for backup
+# we're doing this in case "user_interface" overwrites the files
+echo "Moving copies of source files to ~/216/copies..."
+cp calendar.c student_tests.c Makefile ~/216/copies/
+
+# compile public and student tests for project4 using Makefile
+echo "Compiling public tests using Makefile..."
+make
+
+# run each public test and compare output file with the results
+echo "Running public test 1..."
+public01 > results1
+diff results1 public01.output
+
+echo "Running public test 2..."
+public02 > results2
+diff results2 public02.output
+
+echo "Running public test 3..."
+public03 > results3
+diff results3 public03.output
+
+echo "Running public test 4..."
+public04 > results4
+diff results4 public04.output
+
+echo "Running public test 5..."
+public05 > results5
+diff results5 public05.output
+
+# run the student tests from student_tests.c
+echo "Running student tests..."
+student_tests
+
+# delete executables and redirection files
+echo "Deleting the results files..."
+rm -r ./results* ./*.o ./*~
+
+echo "Your project 4 public tests were successful."
